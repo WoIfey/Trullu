@@ -3,7 +3,6 @@ const title = document.querySelector("#Title")
 function savedTitle() {
   let titleH = localStorage.getItem("title");
   document.title = titleH + " | Trullu"
-  console.log(titleH)
   title.textContent = titleH
   if (titleH === null) {
     title.innerText = "Untitled"

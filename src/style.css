@@ -19,6 +19,9 @@
   scrollbar-color: #9da7ca #00000000;
 }
 
-body {
+html, body {
   overflow-y: hidden;
+}
+body {
+  position: relative
 }

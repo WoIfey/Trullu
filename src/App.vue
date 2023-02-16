@@ -4,18 +4,40 @@ import { ref } from 'vue'
 const newTodo = ref('')
 const todos = ref([])
 const done = ref([])
+const cookie = document.querySelector("#firstTime")
+
+if (document.cookie == "") {
+  cookie.style.display = "initial"
+}
+document.querySelector("#cookies").addEventListener("click", function() {
+  cookie.style.display = "none"
+  document.cookie = "accepted";
+})
 
 function addNewTodo() {
-  // Check if input is empty
-  if (!newTodo.value) return
+  if (todos._rawValue.length > 9) {
+    document.querySelector(".addCard").innerText = "❌ Too many uncompleted cards!"
+    setTimeout(() => {
+      document.querySelector(".addCard").innerText = "+ Add a card"
+    }, 3000);
+  }
+  else if (done._rawValue.length > 49) {
+    document.querySelector(".addCard").innerText = "❌ Too many completed cards!"
+    setTimeout(() => {
+      document.querySelector(".addCard").innerText = "+ Add a card"
+    }, 3000);
+  } else {
+    // Check if input is empty
+    if (!newTodo.value) return
 
-  // Add input to todos
-  todos.value.unshift(newTodo.value)
+    // Add input to todos
+    todos.value.unshift(newTodo.value)
 
-  localStorage.setItem('todos', JSON.stringify(todos));
+    localStorage.setItem('todos', JSON.stringify(todos));
 
-  // Clear input
-  newTodo.value = ''
+    // Clear input
+    newTodo.value = ''
+  }
 }
 /* for (i = 0; i > todos.value; i++) {
   const todo = localStorage.getItem("todos");
@@ -70,7 +92,6 @@ window.onload = function savedCardT() {
   const cardTitle = document.querySelector("#cardTitle")
   let cardT = localStorage.getItem("cTitle");
   cardTitle.textContent = cardT
-  console.log(cardT)
   if (cardT === null) {
     cardTitle.innerText = "Untitled"
   }
@@ -86,7 +107,7 @@ window.onload = function savedCardT() {
       </button>
     </div>
 
-    <div id="cards">
+    <span id="cards">
       <ul id="todo">
         <li v-for="(todo, index) in todos" :key="todo">
           <p @click="todoDone(todo, index)">{{ todo }}</p>
@@ -99,7 +120,7 @@ window.onload = function savedCardT() {
           <button @click="todoDelete(index)">❌</button>
         </li>
       </ul>
-    </div>
+    </span>
 
     <div class="card">
       <button @click="visible" class="addCard">+ Add a card</button>
@@ -146,7 +167,7 @@ window.onload = function savedCardT() {
 
 main {
   padding: 10px;
-  margin-left: 30px;
+  margin-left: 25px;
   margin-top: 5px;
   background: #e4e4e4;
   color: black;
@@ -155,7 +176,7 @@ main {
   flex-direction: column;
   width: 250px;
   overflow-x: hidden;
-  max-height: 650px;
+  max-height: 90%;
 }
 
 textarea {
@@ -185,7 +206,7 @@ h1 {
 }
 
 #cards {
-  overflow-y: scroll;
+  overflow-y: auto;
   border-radius: 10px;
 }
 
