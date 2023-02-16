@@ -1,4 +1,5 @@
 import { createApp } from "vue";
+import { slide } from "./slider";
 import "./style.css";
 import App from "./App.vue";
 
@@ -11,3 +12,5 @@ createApp(New).mount("#new");
 import More from "./Rename.vue";
 
 createApp(More).mount("#rename");
+
+slide()

@@ -4,24 +4,25 @@
 @tailwind utilities;
 ::-webkit-scrollbar {
   width: 5px;
-  height: 5px;
+  height: 7px;
   background-color: #00000000;
-  border-radius: 20px;
+  border-radius: 30px;
 }
-
 ::-webkit-scrollbar-thumb {
-  background-color: #9da7ca;
-  border-radius: 20px;
+  background-color: #6e87de;
+  border-radius: 30px;
 }
-
 * {
   font-family: "Nunito", sans-serif;
-  scrollbar-color: #9da7ca #00000000;
+  scrollbar-color: #6e87de #00000000;
 }
-
-html, body {
-  overflow-y: hidden;
+html,
+body {
+  overflow-y: auto;
 }
 body {
-  position: relative
+  position: relative;
+}
+main {
+  overflow-x: scroll;
 }

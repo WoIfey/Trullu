@@ -2,11 +2,10 @@
 import { ref } from 'vue'
 import { createApp } from "vue";
 import App from "./App.vue";
-const newList = ref('')
-const list = ref(["Untitled"])
+const list = ref([])
 
 function addNewList() {
-  if (list._rawValue.length > 6) {
+  if (list._rawValue.length > 9) {
     document.querySelector("#button").innerText = "❌ You can't add more!"
     setTimeout(() => {
       document.querySelector("#button").innerText = "+ Add another card"
@@ -22,7 +21,7 @@ function addNewList() {
     newCard.before(lists)
 
     createApp(App).mount(lists);
-
+    localStorage.setItem('lists', JSON.stringify(list));
     console.log(list)
   }
 }
@@ -31,13 +30,13 @@ function addNewList() {
 
 <template>
   <main>
-    <button v-once="newList" @click="addNewList" id="button">+ Add another card</button>
+    <button @click="addNewList" id="button">+ Add another card</button>
   </main>
 </template>
 
 <style scoped>
 main {
-  margin-left: 30px;
+  margin-left: 25px;
   margin-top: 5px;
   color: black;
   border-radius: 5px;

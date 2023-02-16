@@ -9,7 +9,7 @@ const cookie = document.querySelector("#firstTime")
 if (document.cookie == "") {
   cookie.style.display = "initial"
 }
-document.querySelector("#cookies").addEventListener("click", function() {
+document.querySelector("#cookies").addEventListener("click", function () {
   cookie.style.display = "none"
   document.cookie = "accepted";
 })
@@ -39,10 +39,6 @@ function addNewTodo() {
     newTodo.value = ''
   }
 }
-/* for (i = 0; i > todos.value; i++) {
-  const todo = localStorage.getItem("todos");
-  console.log(todo)
-} */
 
 function todoDone(todo, index) {
   // Remove todo at index
@@ -83,12 +79,15 @@ function edit() {
 
   if (edited) {
     cardTitle.innerText = edited;
-    localStorage.setItem("cTitle", edited);
+    localStorage.setItem('cTitle', edited);
   } else {
     cardTitle.innerText = "Untitled";
   }
 }
 window.onload = function savedCardT() {
+  let newObject = window.localStorage.getItem("todos");
+  let obj = JSON.parse(newObject)
+
   const cardTitle = document.querySelector("#cardTitle")
   let cardT = localStorage.getItem("cTitle");
   cardTitle.textContent = cardT
@@ -136,7 +135,7 @@ window.onload = function savedCardT() {
       </div>
     </div>
 
-  </main>
+</main>
 </template>
 
 <style scoped>
@@ -188,6 +187,7 @@ textarea {
   outline: none;
   resize: none;
   font-size: 15px;
+  margin-bottom: 3px;
 }
 
 textarea:hover {
