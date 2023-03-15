@@ -1,16 +1,18 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
-/* const lists = ref(["Untitled"]) */
-const lists = ref([{
+const lists = ref(["Untitled"])
+/* const lists = ref([{
   title: "Untitled",
-  items: [{text: '', done: false}],
-}])
+  items: [{ text: '', done: false }],
+}]) */
 
 const newTodo = ref('')
 const todos = ref([])
 const done = ref([])
 const showCookie = ref(false)
+const addCardBtn = ref(true)
+const addCardTodo = ref(false)
 
 function setCookie() {
   document.cookie = "cookies=accepted";
@@ -26,7 +28,7 @@ function addNewTodo() {
   todos.value.push(newTodo.value)
 
   localStorage.setItem('todos', JSON.stringify(todos.value));
-
+  localStorage.setItem('done', JSON.stringify(done.value));
   // Clear input
   newTodo.value = ''
 }
@@ -35,7 +37,8 @@ watch(
   () => lists,
   () => {
     localStorage.setItem('todos', JSON.stringify(todos.value));
-  }, { deep: true}
+    localStorage.setItem('done', JSON.stringify(done.value));
+  }, { deep: true }
 )
 
 function todoDone(todo, index) {
@@ -44,7 +47,7 @@ function todoDone(todo, index) {
 
   // Add todo to done
   done.value.unshift(todo)
-
+  localStorage.setItem('todos', JSON.stringify(todos.value));
   localStorage.setItem('done', JSON.stringify(done.value));
 }
 
@@ -54,24 +57,23 @@ function todoUndo(todo, index) {
 
   // Add todo to done
   todos.value.push(todo)
+  localStorage.setItem('todos', JSON.stringify(todos.value));
+  localStorage.setItem('done', JSON.stringify(done.value));
 }
 
 function todoDelete(index) {
   // Remove todo at index
   done.value.splice(index, 1)
+  localStorage.setItem('done', JSON.stringify(done.value));
 }
 
-// Make add a card visible once clicked
-function visible() {
-  document.querySelector(".hidden").style.display = "initial"
-  document.querySelector(".addCard").style.display = "none"
-  document.querySelector("textarea").focus()
+function show() {
+  addCardBtn.value = false
+  addCardTodo.value = true
 }
-
-// Adds the new card and makes the textarea hidden
-function addVisible() {
-  document.querySelector(".hidden").style.display = "none"
-  document.querySelector(".addCard").style.display = "initial"
+function unShow() {
+  addCardTodo.value = false
+  addCardBtn.value = true
 }
 
 // Edits the cards title
@@ -111,10 +113,15 @@ onMounted(() => {
 
   // Get todos from localstorage
   let newObject = window.localStorage.getItem("todos");
+  let newDones = window.localStorage.getItem("done");
   let obj = JSON.parse(newObject)
+  let dones = JSON.parse(newDones)
 
   if (obj) {
     todos.value = obj
+  }
+  if (newDones) {
+    done.value = dones
   }
 
   const cardTitle = document.querySelector("#cardTitle")
@@ -141,10 +148,8 @@ function deleteAllCookies() {
     document.cookie = Cookies[i] + "=;expires=" + new Date(0).toUTCString();
 }
 
-
-
 function addNewList() {
-  if (lists.value.length > 9) {
+  if (lists.value.length > 6) {
     document.querySelector("#button").innerText = "❌ You can't add more!"
     setTimeout(() => {
       document.querySelector("#button").innerText = "+ Add another card"
@@ -178,8 +183,7 @@ function addNewList() {
   </div>
 
   <main class="flex max-h-[95%]">
-    <div
-    v-for="list, index in lists" :key="index"
+    <div v-for="list, index in lists" :key="index"
       class="p-[10px] mt-[120px] ml-[25px] bg-[#e4e4e4] text-black rounded-[5px] flex flex-col w-[250px] overflow-x-hidden">
       <div class="flex">
         <h1 id="cardTitle"
@@ -213,7 +217,7 @@ function addNewList() {
       </span>
 
       <div class="card flex justify-center w-full">
-        <button @click="visible" class="addCard mt-1 w-full rounded-[5px] hover:bg-[#d6d6d6]">
+        <button v-if="addCardBtn" @click="show" class="addCard mt-1 w-full rounded-[5px] hover:bg-[#d6d6d6]">
           <div class="py-1 flex justify-center">
             <img class="w-[15px] mr-1" src="/src/assets/plus-bold.svg" alt="+">
             <p>Add a card</p>
@@ -221,15 +225,15 @@ function addNewList() {
         </button>
       </div>
       <div class="flex justify-center">
-        <div class="hidden">
+        <div v-show="addCardTodo">
           <textarea
             class="p-[5px] rounded-[5px] bg-[#dadada] text-black w-[230px] outline-none resize-none text-[15px] mb-[3px] mt-[7px] hover:bg-white focus:bg-white"
             rows="2" col="0" type="text" placeholder="Enter a title for your card...   (Max 80 Characters)"
-            v-model="newTodo" @keypress.enter="addNewTodo(); addVisible();" maxlength="80"></textarea>
+            v-model="newTodo" @keypress.enter="addNewTodo(); unShow()" maxlength="80"></textarea>
           <div class="flex justify-between">
             <button class="bg-[#6e87de] shadow text-white py-[2px] px-[7px] rounded-[10px] hover:bg-[#6074be]"
-              @click="addNewTodo(); addVisible();">Add card</button>
-            <button @click="addVisible" class="w-[30px] h-[30px] bg-white shadow rounded-[10px] hover:bg-[#e6e6e6]">
+              @click="addNewTodo(); unShow();">Add card</button>
+            <button @click="unShow" class="w-[30px] h-[30px] bg-white shadow rounded-[10px] hover:bg-[#e6e6e6]">
               <img class="p-1" src="/src/assets/x-bold.svg" alt="X">
             </button>
           </div>
