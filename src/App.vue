@@ -1,44 +1,42 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+
+/* const lists = ref(["Untitled"]) */
+const lists = ref([{
+  title: "Untitled",
+  items: [{text: '', done: false}],
+}])
 
 const newTodo = ref('')
 const todos = ref([])
 const done = ref([])
-const cookie = document.querySelector("#firstTime")
+const showCookie = ref(false)
 
-if (document.cookie == "") {
-  cookie.style.display = "initial"
+function setCookie() {
+  document.cookie = "cookies=accepted";
+  showCookie.value = false;
 }
-document.querySelector("#cookies").addEventListener("click", function () {
-  cookie.style.display = "none"
-  document.cookie = "accepted";
-})
 
+// Add new todo
 function addNewTodo() {
-  if (todos._rawValue.length > 9) {
-    document.querySelector(".addCard").innerText = "❌ Too many uncompleted cards!"
-    setTimeout(() => {
-      document.querySelector(".addCard").innerText = "+ Add a card"
-    }, 3000);
-  }
-  else if (done._rawValue.length > 49) {
-    document.querySelector(".addCard").innerText = "❌ Too many completed cards!"
-    setTimeout(() => {
-      document.querySelector(".addCard").innerText = "+ Add a card"
-    }, 3000);
-  } else {
-    // Check if input is empty
-    if (!newTodo.value) return
+  // Check if input is empty
+  if (!newTodo.value) return
 
-    // Add input to todos
-    todos.value.unshift(newTodo.value)
+  // Add input to todos
+  todos.value.push(newTodo.value)
 
-    localStorage.setItem('todos', JSON.stringify(todos));
+  localStorage.setItem('todos', JSON.stringify(todos.value));
 
-    // Clear input
-    newTodo.value = ''
-  }
+  // Clear input
+  newTodo.value = ''
 }
+
+watch(
+  () => lists,
+  () => {
+    localStorage.setItem('todos', JSON.stringify(todos.value));
+  }, { deep: true}
+)
 
 function todoDone(todo, index) {
   // Remove todo at index
@@ -46,9 +44,11 @@ function todoDone(todo, index) {
 
   // Add todo to done
   done.value.unshift(todo)
+
+  localStorage.setItem('done', JSON.stringify(done.value));
 }
 
-function todoUndone(todo, index) {
+function todoUndo(todo, index) {
   // Remove todo at index
   done.value.splice(index, 1)
 
@@ -61,18 +61,21 @@ function todoDelete(index) {
   done.value.splice(index, 1)
 }
 
+// Make add a card visible once clicked
 function visible() {
   document.querySelector(".hidden").style.display = "initial"
   document.querySelector(".addCard").style.display = "none"
   document.querySelector("textarea").focus()
 }
 
+// Adds the new card and makes the textarea hidden
 function addVisible() {
   document.querySelector(".hidden").style.display = "none"
   document.querySelector(".addCard").style.display = "initial"
 }
 
-function edit() {
+// Edits the cards title
+function editCard() {
   const cardTitle = document.querySelector("#cardTitle")
   let edited = prompt("Edit Card Title (Max 25 Characters)");
   edited = edited.substring(0, 25);
@@ -84,209 +87,170 @@ function edit() {
     cardTitle.innerText = "Untitled";
   }
 }
-window.onload = function savedCardT() {
+
+// Edits the title
+function editTitle() {
+  const title = document.querySelector("#Title")
+  let renamed = prompt("Rename Title (Max 30 Characters)");
+  renamed = renamed.substring(0, 30);
+  if (renamed) {
+    title.innerText = renamed;
+    document.title = renamed + " | Trullu"
+    localStorage.setItem("title", renamed);
+  } else {
+    title.innerText = "Untitled";
+  }
+}
+
+// Loads all saved cards and title
+onMounted(() => {
+  // Check if cookie has been accepted
+  if (!document.cookie) {
+    showCookie.value = true
+  }
+
+  // Get todos from localstorage
   let newObject = window.localStorage.getItem("todos");
   let obj = JSON.parse(newObject)
+
+  if (obj) {
+    todos.value = obj
+  }
 
   const cardTitle = document.querySelector("#cardTitle")
   let cardT = localStorage.getItem("cTitle");
   cardTitle.textContent = cardT
-  if (cardT === null) {
+  if (!cardT) {
     cardTitle.innerText = "Untitled"
+  }
+
+  const title = document.querySelector("#Title")
+  let titleH = localStorage.getItem("title");
+  document.title = titleH + " | Trullu"
+  title.textContent = titleH
+  if (titleH === null) {
+    title.innerText = "Untitled"
+    document.title = "Untitled | Trullu"
+  }
+})
+
+function deleteAllCookies() {
+  let Cookies = document.cookie.split(';');
+  showCookie.value = true;
+  for (let i = 0; i < Cookies.length; i++)
+    document.cookie = Cookies[i] + "=;expires=" + new Date(0).toUTCString();
+}
+
+
+
+function addNewList() {
+  if (lists.value.length > 9) {
+    document.querySelector("#button").innerText = "❌ You can't add more!"
+    setTimeout(() => {
+      document.querySelector("#button").innerText = "+ Add another card"
+    }, 3000);
+  } else {
+    lists.value.push("Untitled")
+
   }
 }
 </script>
 
 <template>
-  <main>
-    <div id="title">
-      <h1 id="cardTitle">Untitled</h1>
-      <button id="edit" @click="edit">
-        <img src="/src/assets/pencil-simple-line-bold.svg">
-      </button>
+  <nav class="flex justify-between items-center w-screen h-15 fixed bg-zinc-700 border-b-2 border-white pr-2 pl-2">
+    <div class="flex items-center w-full">
+      <img src="/src/assets/trullu.ico" alt="Icon" class="h-4 ml-2">
+      <p class="text-2xl m-2 flex text-white">Trullu</p>
     </div>
-
-    <span id="cards">
-      <ul id="todo">
-        <li v-for="(todo, index) in todos" :key="todo">
-          <p @click="todoDone(todo, index)">{{ todo }}</p>
-        </li>
-      </ul>
-
-      <ul id="done">
-        <li v-for="(todo, index) in done" :key="todo">
-          <p @click="todoUndone(todo, index)">{{ todo }}</p>
-          <button @click="todoDelete(index)">❌</button>
-        </li>
-      </ul>
-    </span>
-
-    <div class="card">
-      <button @click="visible" class="addCard">+ Add a card</button>
+    <div class="flex justify-end items-end w-full">
+      <img src="/src/assets/cookie-bold.svg" alt="Cookie" class="w-7 mr-1 bg-amber-700 rounded-xl cursor-pointer"
+        @click="deleteAllCookies">
     </div>
-    <div class="hiddenAdd">
-      <div class="hidden">
-        <textarea rows="2" col="0" type="text" placeholder="Enter a title for your card...   (Max 80 Characters)"
-          v-model="newTodo" @keypress.enter="addNewTodo(); addVisible();" maxlength="80"></textarea>
-        <div class="between">
-          <button class="added" @click="addNewTodo(); addVisible();">Add card</button>
-          <button @click="addVisible" class="close">❌</button>
+  </nav>
+  <div class="pt-11 fixed flex justify-end items-end">
+    <h1 id="Title" class="text-4xl pt-6 pl-8 text-white max-w-[550px] overflow-hidden whitespace-nowrap text-ellipsis">
+      Untitled
+    </h1>
+    <button @click="editTitle()" class="mb-2 ml-2">
+      <img class="w-[25px] p-[3px] bg-white rounded-xl hover:bg-[#d6d6d6]" src="/src/assets/pencil-simple-line-bold.svg"
+        alt="Rename">
+    </button>
+  </div>
+
+  <main class="flex max-h-[95%]">
+    <div
+    v-for="list, index in lists" :key="index"
+      class="p-[10px] mt-[120px] ml-[25px] bg-[#e4e4e4] text-black rounded-[5px] flex flex-col w-[250px] overflow-x-hidden">
+      <div class="flex">
+        <h1 id="cardTitle"
+          class="pl-[5px] mb-0.5 text-[20px] max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
+          Untitled</h1>
+        <button class="ml-[2px] mb-0.5" @click="editCard">
+          <img class="w-[20px] p-[2px] rounded hover:bg-[#d6d6d6]" alt="edit button"
+            src="/src/assets/pencil-simple-line-bold.svg">
+        </button>
+      </div>
+
+      <span id="cards" class="overflow-y-auto">
+        <ul id="todo">
+          <li class="bg-white rounded-[5px] p-[10px] shadow cursor-pointer mb-[10px]" v-for="(todo, index) in todos">
+            <p class="whitespace-pre-line overflow-hidden text-ellipsis w-full text-[17px]"
+              @click="todoDone(todo, index)">
+              {{ todo }}</p>
+          </li>
+        </ul>
+
+        <ul id="done">
+          <li class="bg-[#d6d6d6] rounded-[5px] p-[10px] shadow cursor-pointer mb-[10px] select-none flex justify-between"
+            v-for="(todo, index) in done">
+            <p class="line-through whitespace-pre-line overflow-hidden text-ellipsis w-full text-[17px]"
+              @click="todoUndo(todo, index)">{{ todo }}</p>
+            <button class="rounded-lg hover:bg-[#f0ecec] w-[29px]" @click="todoDelete(index)">
+              <img class="p-1" src="/src/assets/trash-bold.svg" alt="X">
+            </button>
+          </li>
+        </ul>
+      </span>
+
+      <div class="card flex justify-center w-full">
+        <button @click="visible" class="addCard mt-1 w-full rounded-[5px] hover:bg-[#d6d6d6]">
+          <div class="py-1 flex justify-center">
+            <img class="w-[15px] mr-1" src="/src/assets/plus-bold.svg" alt="+">
+            <p>Add a card</p>
+          </div>
+        </button>
+      </div>
+      <div class="flex justify-center">
+        <div class="hidden">
+          <textarea
+            class="p-[5px] rounded-[5px] bg-[#dadada] text-black w-[230px] outline-none resize-none text-[15px] mb-[3px] mt-[7px] hover:bg-white focus:bg-white"
+            rows="2" col="0" type="text" placeholder="Enter a title for your card...   (Max 80 Characters)"
+            v-model="newTodo" @keypress.enter="addNewTodo(); addVisible();" maxlength="80"></textarea>
+          <div class="flex justify-between">
+            <button class="bg-[#6e87de] shadow text-white py-[2px] px-[7px] rounded-[10px] hover:bg-[#6074be]"
+              @click="addNewTodo(); addVisible();">Add card</button>
+            <button @click="addVisible" class="w-[30px] h-[30px] bg-white shadow rounded-[10px] hover:bg-[#e6e6e6]">
+              <img class="p-1" src="/src/assets/x-bold.svg" alt="X">
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-</main>
+    <div class="ml-[25px] mt-[120px] text-black rounded-[5px] flex flex-col w-[215px]">
+      <button @click="addNewList" id="button"
+        class="p-[10px] rounded-[5px] bg-[#dddddd] text-black mr-[25px] hover:bg-white">
+        <div class="flex justify-center">
+          <img class="w-[15px] mr-1" src="/src/assets/plus-bold.svg" alt="+">
+          <p>Add another list</p>
+        </div>
+      </button>
+    </div>
+  </main>
+
+  <span v-if="showCookie" class="z-10 fixed bg-slate-600 left-0 bottom-0 w-full text-white">
+    <p class="p-3 pb-1">Trullu uses cookies to save your cards.</p>
+    <button id="cookies" class="bg-white text-black px-2 py-1 ml-3 mb-3 rounded-lg hover:bg-gray-300"
+      @click="setCookie">Accept</button>
+  </span>
 </template>
-
-<style scoped>
-.hidden {
-  display: none;
-}
-
-.hiddenAdd {
-  display: flex;
-  justify-content: center;
-}
-
-.card {
-  padding-top: 7px;
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.addCard {
-  width: 100%;
-  border-radius: 5px;
-}
-
-.addCard:hover {
-  background: #d6d6d6;
-}
-
-main {
-  padding: 10px;
-  margin-left: 25px;
-  margin-top: 5px;
-  background: #e4e4e4;
-  color: black;
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  width: 250px;
-  overflow-x: hidden;
-  max-height: 90%;
-}
-
-textarea {
-  padding: 5px;
-  border-radius: 5px;
-  background: #dadada;
-  color: black;
-  width: 230px;
-  outline: none;
-  resize: none;
-  font-size: 15px;
-  margin-bottom: 3px;
-}
-
-textarea:hover {
-  background: white;
-}
-
-textarea:focus {
-  background: white;
-}
-
-h1 {
-  padding-bottom: 7px;
-  padding-left: 5px;
-  font-weight: bold;
-  font-size: 20px;
-}
-
-#cards {
-  overflow-y: auto;
-  border-radius: 10px;
-}
-
-li {
-  border-radius: 5px;
-  cursor: pointer;
-  padding: 10px;
-  background: white;
-  box-shadow: 0 1px 1px #b1b1b1;
-  margin-bottom: 10px;
-  user-select: none;
-}
-
-#done li {
-  background: #d6d6d6;
-}
-
-p {
-  white-space: pre-line;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
-  font-size: 15px;
-}
-
-#done>li {
-  display: flex;
-  justify-content: space-between;
-}
-
-#done p {
-  text-decoration: line-through;
-}
-
-#title {
-  display: flex;
-}
-
-img {
-  width: 15px;
-}
-
-#edit {
-  margin-left: 4px;
-  margin-bottom: 5px;
-}
-
-.added {
-  background: #6e87de;
-  box-shadow: 0 1px 1px #b1b1b1;
-  color: white;
-  padding: 2px 7px;
-  border-radius: 10px;
-}
-
-.added:hover {
-  background: #6074be;
-}
-
-.close {
-  width: 30px;
-  height: 30px;
-  background: white;
-  box-shadow: 0 1px 1px #b1b1b1;
-  border-radius: 10px;
-}
-
-.close:hover {
-  background: #e6e6e6;
-}
-
-.between {
-  display: flex;
-  justify-content: space-between;
-}
-
-#cardTitle {
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-</style>

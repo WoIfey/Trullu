@@ -16,13 +16,3 @@
   font-family: "Nunito", sans-serif;
   scrollbar-color: #6e87de #00000000;
 }
-html,
-body {
-  overflow-y: auto;
-}
-body {
-  position: relative;
-}
-main {
-  overflow-x: scroll;
-}
