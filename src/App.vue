@@ -19,6 +19,7 @@ function setCookie() {
   showCookie.value = false;
 }
 
+
 // Add new todo
 function addNewTodo() {
   // Check if input is empty
@@ -33,13 +34,13 @@ function addNewTodo() {
   newTodo.value = ''
 }
 
-watch(
+/* watch(
   () => lists,
   () => {
     localStorage.setItem('todos', JSON.stringify(todos.value));
     localStorage.setItem('done', JSON.stringify(done.value));
   }, { deep: true }
-)
+) */
 
 function todoDone(todo, index) {
   // Remove todo at index
@@ -197,21 +198,23 @@ function addNewList() {
 
       <span id="cards" class="overflow-y-auto">
         <ul id="todo">
-          <li class="bg-white rounded-[5px] p-[10px] shadow cursor-pointer mb-[10px]" v-for="(todo, index) in todos">
-            <p class="whitespace-pre-line overflow-hidden text-ellipsis w-full text-[17px]"
+          <li class="bg-white rounded-[5px] shadow cursor-pointer mb-[10px]" v-for="(todo, index) in todos">
+            <p class="whitespace-pre-line overflow-hidden text-ellipsis p-[10px] w-full text-[17px]"
               @click="todoDone(todo, index)">
               {{ todo }}</p>
           </li>
         </ul>
 
         <ul id="done">
-          <li class="bg-[#d6d6d6] rounded-[5px] p-[10px] shadow cursor-pointer mb-[10px] select-none flex justify-between"
+          <li class="bg-[#d6d6d6] rounded-[5px] shadow cursor-pointer mb-[10px] select-none flex justify-between"
             v-for="(todo, index) in done">
-            <p class="line-through whitespace-pre-line overflow-hidden text-ellipsis w-full text-[17px]"
+            <p class="line-through whitespace-pre-line overflow-hidden text-ellipsis p-[10px] w-full text-[17px]"
               @click="todoUndo(todo, index)">{{ todo }}</p>
-            <button class="rounded-lg hover:bg-[#f0ecec] w-[29px]" @click="todoDelete(index)">
-              <img class="p-1" src="/src/assets/trash-bold.svg" alt="X">
-            </button>
+            <div class="flex justify-center items-center">
+              <button class="rounded-lg hover:bg-[#f0ecec] w-[29px] mr-1" @click="todoDelete(index)">
+                <img class="p-1.5" src="/src/assets/trash-bold.svg" alt="X">
+              </button>
+            </div>
           </li>
         </ul>
       </span>
