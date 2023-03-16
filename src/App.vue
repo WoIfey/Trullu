@@ -19,7 +19,6 @@ function setCookie() {
   showCookie.value = false;
 }
 
-
 // Add new todo
 function addNewTodo() {
   // Check if input is empty
@@ -143,10 +142,17 @@ onMounted(() => {
 })
 
 function deleteAllCookies() {
-  let Cookies = document.cookie.split(';');
-  showCookie.value = true;
-  for (let i = 0; i < Cookies.length; i++)
-    document.cookie = Cookies[i] + "=;expires=" + new Date(0).toUTCString();
+  let text = "Do you want to delete all cards and cookies?";
+  if (confirm(text) == true) {
+    let Cookies = document.cookie.split(';');
+    showCookie.value = true;
+    for (let i = 0; i < Cookies.length; i++)
+      document.cookie = Cookies[i] + "=;expires=" + new Date(0).toUTCString();
+    localStorage.clear();
+    location.reload()
+  } else {
+    return false
+  }
 }
 
 function addNewList() {
@@ -169,8 +175,8 @@ function addNewList() {
       <p class="text-2xl m-2 flex text-white">Trullu</p>
     </div>
     <div class="flex justify-end items-end w-full">
-      <img src="/src/assets/cookie-bold.svg" alt="Cookie" class="w-7 mr-1 bg-amber-700 rounded-xl cursor-pointer"
-        @click="deleteAllCookies">
+      <img src="/src/assets/trash-bold.svg" alt="Icon"
+        class="w-7 p-0.5 mr-1 bg-red-700 rounded-xl cursor-pointer hover:bg-red-800" @click="deleteAllCookies">
     </div>
   </nav>
   <div class="pt-11 fixed flex justify-end items-end">
@@ -244,14 +250,14 @@ function addNewList() {
       </div>
     </div>
 
-    <div class="ml-[25px] mt-[120px] text-black rounded-[5px] flex flex-col w-[215px]">
-      <button @click="addNewList" id="button"
-        class="p-[10px] rounded-[5px] bg-[#dddddd] text-black mr-[25px] hover:bg-white">
+    <div class="ml-[25px] mt-[120px] text-black rounded-[5px] flex flex-col w-[205px]">
+      <button id="button" class="p-[10px] rounded-[5px] bg-[#666666] text-black mr-[25px] cursor-not-allowed">
         <div class="flex justify-center">
           <img class="w-[15px] mr-1" src="/src/assets/plus-bold.svg" alt="+">
           <p>Add another list</p>
         </div>
       </button>
+      <p class="text-gray-500 select-none">WIP</p>
     </div>
   </main>
 
