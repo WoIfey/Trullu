@@ -257,7 +257,7 @@ function addNewList() {
           <p>Add another list</p>
         </div>
       </button>
-      <p class="text-gray-500 select-none">WIP</p>
+      <p class="text-gray-600 select-none text-sm">WIP</p>
     </div>
   </main>
 
