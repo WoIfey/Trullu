@@ -2,16 +2,11 @@
 import { ref, onMounted, watch } from 'vue'
 
 const lists = ref([{ id: 1, title: "Untitled", todos: [], done: [] }])
-const showCookie = ref(false)
 const newTodo = ref('')
 const addingCard = ref(null)
 const mainTitle = ref('Untitled')
 
 onMounted(() => {
-  if (!document.cookie.includes('cookies=accepted')) {
-    showCookie.value = true
-  }
-
   const savedLists = window.localStorage.getItem('lists')
   if (savedLists) {
     lists.value = JSON.parse(savedLists)
@@ -27,11 +22,6 @@ onMounted(() => {
 watch(lists, (newLists) => {
   window.localStorage.setItem('lists', JSON.stringify(newLists))
 }, { deep: true })
-
-function setCookie() {
-  document.cookie = "cookies=accepted"
-  showCookie.value = false
-}
 
 function addNewTodo(listId) {
   if (!newTodo.value) return
@@ -174,9 +164,9 @@ function removeList(listId) {
         </ul>
       </span>
 
-      <div class="card flex justify-center w-full">
+      <div class="flex justify-center w-full" :class="{ 'hidden': (list.todos.length + list.done.length) >= 12 }">
         <button v-if="addingCard !== list.id" @click="addingCard = list.id"
-          class="addCard mt-1 w-full rounded-[5px] hover:bg-[#d6d6d6]">
+          class="mt-1 w-full rounded-[5px] hover:bg-[#d6d6d6]">
           <div class="py-1 flex justify-center">
             <img class="w-[15px] mr-1" src="/src/assets/plus-bold.svg" alt="+">
             <p>Add a card</p>
@@ -211,10 +201,4 @@ function removeList(listId) {
       </button>
     </div>
   </main>
-
-  <span v-if="showCookie" class="z-10 fixed bg-slate-600 left-0 bottom-0 w-full text-white">
-    <p class="p-3 pb-1">Trullu uses cookies to save your cards.</p>
-    <button id="cookies" class="bg-white text-black px-2 py-1 ml-3 mb-3 rounded-lg hover:bg-gray-300"
-      @click="setCookie">Accept</button>
-  </span>
 </template>
