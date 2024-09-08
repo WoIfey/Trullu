@@ -111,17 +111,17 @@ function removeList(listId) {
         class="w-7 p-0.5 mr-1 bg-red-700 rounded-xl cursor-pointer hover:bg-red-800" @click="deleteAllCookies">
     </div>
   </nav>
-  <div class="pt-11 fixed flex justify-end items-end">
-    <h1 id="Title" class="text-4xl pt-6 pl-8 text-white max-w-[550px] overflow-hidden whitespace-nowrap text-ellipsis">
+  <div class="pt-[75px] flex items-center gap-4 pl-8">
+    <h1 id="Title" class="text-4xl text-white max-w-[550px] truncate">
       {{ mainTitle }}
     </h1>
-    <button @click="editTitle" class="mb-2 ml-2">
-      <img class="w-[25px] p-[3px] bg-white rounded-xl hover:bg-[#d6d6d6]" src="/src/assets/pencil-simple-line-bold.svg"
+    <button @click="editTitle">
+      <img class="p-[3px] w-8 bg-white rounded-xl hover:bg-[#d6d6d6]" src="/src/assets/pencil-simple-line-bold.svg"
         alt="Rename">
     </button>
   </div>
 
-  <main class="max-h-[85%] flex items-start mt-[125px]" :class="{ 'mr-[25px]': lists.length >= 10 }">
+  <main class="max-h-[85%] flex items-start pt-6" :class="{ 'mr-[25px]': lists.length >= 10 }">
     <div v-for="list in lists" :key="list.id"
       class="p-[10px] ml-[25px] bg-[#e4e4e4] text-black rounded-[5px] flex flex-col w-[250px]">
       <div class="flex justify-between items-center">
@@ -143,8 +143,7 @@ function removeList(listId) {
         <ul id="todo">
           <li class="bg-white rounded-[5px] shadow cursor-pointer mb-[10px]" v-for="(todo, index) in list.todos"
             :key="index">
-            <p class="whitespace-pre-line overflow-hidden text-ellipsis p-[10px] w-full text-[17px]"
-              @click="todoDone(list.id, index)">
+            <p class="[overflow-wrap:anywhere] p-[10px] w-full text-[17px]" @click="todoDone(list.id, index)">
               {{ todo }}
             </p>
           </li>
@@ -153,8 +152,8 @@ function removeList(listId) {
         <ul id="done">
           <li class="bg-[#d6d6d6] rounded-[5px] shadow cursor-pointer mb-[10px] select-none flex justify-between"
             v-for="(todo, index) in list.done" :key="index">
-            <p class="line-through whitespace-pre-line overflow-hidden text-ellipsis p-[10px] w-full text-[17px]"
-              @click="todoUndo(list.id, index)">{{ todo }}</p>
+            <p class="line-through truncate p-[10px] w-full text-[17px]" @click="todoUndo(list.id, index)">{{ todo }}
+            </p>
             <div class="flex justify-center items-center">
               <button class="rounded-lg hover:bg-[#f0ecec] w-[29px] mr-1" @click="todoDelete(list.id, index)">
                 <img class="p-1.5" src="/src/assets/trash-bold.svg" alt="X">
@@ -164,7 +163,7 @@ function removeList(listId) {
         </ul>
       </span>
 
-      <div class="flex justify-center w-full" :class="{ 'hidden': (list.todos.length + list.done.length) >= 12 }">
+      <div class="flex justify-center w-full" :class="{ 'hidden': (list.todos.length + list.done.length) >= 15 }">
         <button v-if="addingCard !== list.id" @click="addingCard = list.id"
           class="mt-1 w-full rounded-[5px] hover:bg-[#d6d6d6]">
           <div class="py-1 flex justify-center">
